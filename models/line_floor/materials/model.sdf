@@ -1,0 +1,15 @@
+<visual name="visual">
+  <geometry>
+    <plane>
+      <normal>0 0 1</normal>
+      <size>5 5</size>
+    </plane>
+  </geometry>
+  <material>
+    <script>
+      <uri>model://line_floor/materials/scripts</uri>
+      <uri>model://line_floor/materials/textures</uri>
+      <name>LineMap/WhiteWithBlackLine</name>
+    </script>
+  </material>
+</visual>

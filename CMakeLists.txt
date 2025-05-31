@@ -7,9 +7,31 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED) 
+
+find_package(gazebo_dev REQUIRED)
+find_package(gazebo_ros REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
+
+install(
+  DIRECTORY urdf launch config
+  DESTINATION share/${PROJECT_NAME}
+)
+install(
+  PROGRAMS
+    src/nodes/line_follower.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+
+# install(
+#   DIRECTORY model/
+#   DESTINATION share/${PROJECT_NAME}/models
+# )
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -22,15 +44,5 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
-
-# Install launch files
-
-install(
-  DIRECTORY urdf launch config
-  DESTINATION share/${PROJECT_NAME}
-)
-
-
-
 
 ament_package()

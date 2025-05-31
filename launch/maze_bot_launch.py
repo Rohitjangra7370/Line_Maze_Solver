@@ -22,7 +22,7 @@ def generate_launch_description():
     use_rviz = LaunchConfiguration('use_rviz')
     
     # Process the xacro file to generate robot description
-    robot_description_config = Command(['xacro ', xacro_file])
+    robot_description_config = Command(['xacro ', xacro_file,])
 
     return LaunchDescription([
         # Launch Arguments
