@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" >
+    
+    <joint name="camera_joint" type="fixed">
+        <parent link="chassis"/>
+        <child link="camera_link"/>
+        <origin xyz="0.075 0 0.03" rpy="0 0 0" />
+    </joint>
+
+    <link name="camera_link">
+          <visual>
+            <origin xyz="0 0 0"/>
+            <geometry>
+              <box size="0.05 0.04 0.01"/>
+        </geometry>
+            <material name="black">
+              <color rgba="0 0 0 1"/>
+        </material>
+      </visual>
+    </link>
+
+    <gazebo reference="camera_link">
+        <sensor name="camera_sensor" type="camera">
+            <camera>
+                <image>
+                    <width>640</width>
+                    <height>480</height>
+                    <format>R8G8B8</format>
+                </image>
+                
+            </camera>
+            <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+                <frame_name>camera_link</frame_name>
+            </plugin>
+
+        </sensor>
+
+    </gazebo>
+
+    
+    
+</robot>
