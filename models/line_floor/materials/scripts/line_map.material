@@ -1,13 +1,13 @@
-material LineMap/WhiteWithBlackLine
+material LineMap/BlackLine
 {
-    technique
+  technique
+  {
+    pass
     {
-        pass
-        {
-            texture_unit
-            {
-                texture line_map.png
-            }
-        }
+      texture_unit
+      {
+        texture line_map.png
+      }
     }
+  }
 }
