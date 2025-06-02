@@ -8,14 +8,17 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclpy REQUIRED)
+find_package(cv_bridge REQUIRED)
+find_package(OpenCV REQUIRED)
+find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
 find_package(sensor_msgs REQUIRED)
-find_package(geometry_msgs REQUIRED) 
+find_package(geometry_msgs REQUIRED)
+find_package(robot_state_publisher REQUIRED)
+find_package(joint_state_publisher REQUIRED)
 find_package(joint_state_publisher_gui REQUIRED)
 find_package(gazebo_dev REQUIRED)
 find_package(gazebo_ros REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
 
 install(
   DIRECTORY urdf launch config
@@ -27,11 +30,6 @@ install(
   DESTINATION lib/${PROJECT_NAME}
 )
 
-
-# install(
-#   DIRECTORY model/
-#   DESTINATION share/${PROJECT_NAME}/models
-# )
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
