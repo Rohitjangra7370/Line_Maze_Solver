@@ -8,6 +8,7 @@ from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, Command
 from launch_ros.actions import Node
+from launch.substitutions import PathJoinSubstitution
 
 def generate_launch_description():
     # Get the package directory
@@ -18,8 +19,7 @@ def generate_launch_description():
     
     # Launch configuration variables
     use_sim_time = LaunchConfiguration('use_sim_time')
-    use_gazebo = LaunchConfiguration('use_gazebo')
-    use_rviz = LaunchConfiguration('use_rviz')
+    launch_dir = os.path.join(pkg_share, 'launch')
     
     # Process the xacro file to generate robot description
     robot_description_config = Command(['xacro ', xacro_file,])
@@ -32,18 +32,6 @@ def generate_launch_description():
             description='Sync with Gazebo time'
         ),
         
-        DeclareLaunchArgument(
-            'use_gazebo',
-            default_value='true',
-            description='Start Gazebo simulation'
-        ),
-        
-        DeclareLaunchArgument(
-            'use_rviz',
-            default_value='true',
-            description='Start RViz2 for visualization'
-        ),
-
         # Robot State Publisher
         Node(
             package='robot_state_publisher',
@@ -64,36 +52,12 @@ def generate_launch_description():
             output='screen'
         ),
 
-        # Include Gazebo (conditional)
         IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([
-                os.path.join(get_package_share_directory('gazebo_ros'), 'launch', 'gazebo.launch.py')
-            ]),
-            condition=IfCondition(use_gazebo)
+            PathJoinSubstitution([launch_dir, 'gazebo_launch.py']),
         ),
 
-        # Spawn Robot in Gazebo (conditional)
-        Node(
-            package='gazebo_ros',
-            executable='spawn_entity.py',
-            arguments=[
-                '-topic', 'robot_description',
-                '-entity', 'maze_bot',
-                '-x', '0.0',
-                '-y', '0.0',
-                '-z', '0.5',
-                '-robot_namespace', '/'
-            ],
-            output='screen',
-            condition=IfCondition(use_gazebo)
-        ),
+        IncludeLaunchDescription(
+            PathJoinSubstitution([launch_dir, 'rviz_launch.py'])
+        )
 
-        # RViz2 (conditional)
-        Node(
-            package='rviz2',
-            executable='rviz2',
-            name='rviz2',
-            output='screen',
-            condition=IfCondition(use_rviz)
-        ),
     ])
