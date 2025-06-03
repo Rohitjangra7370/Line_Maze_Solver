@@ -25,7 +25,6 @@ class LineFollower(Node):
 
             # Convert to HSV and threshold for white
             hsv = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
-            # White color mask
             mask = cv2.inRange(hsv, (0, 0, 200), (180, 30, 255))
 
             # Find contours
