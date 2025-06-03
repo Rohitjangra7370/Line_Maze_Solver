@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
-from sensor_msgs import msg
 from sensor_msgs.msg import Image
-from geometry_msgs.msg import Twist
 from cv_bridge import CvBridge
 import cv2
 import numpy as np
@@ -14,13 +12,10 @@ class LineFollower(Node):
         self.bridge = CvBridge()
         self.image_sub = self.create_subscription(
             Image,
-            'processed_image',
+            'camera_sensor/image_raw',
             self.image_callback,
             10)
-        self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel')
-        self.Kp = 0.002
-        self.last_error = 0
-        self.get_logger().info("Line Follower Node Initialized")
+        self.image_pub = self.create_publisher(Image, 'processed_image', 10)
 
     def image_callback(self, msg):
         try:
@@ -28,33 +23,32 @@ class LineFollower(Node):
             cv_image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
             height, width, _ = cv_image.shape
 
-            # Crop lower part of the image for line detection
-            crop_height = 40
-            crop = cv_image[height-crop_height:height, 0:width]
-
-            # Convert to HSV and threshold for black
-            hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV)
-            mask = cv2.inRange(hsv, (0, 0, 0), (180, 255, 50))
+            # Convert to HSV and threshold for white
+            hsv = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
+            # White color mask
+            mask = cv2.inRange(hsv, (0, 0, 200), (180, 30, 255))
 
             # Find contours
             contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
             if contours:
+                # Draw all contours in bright green with thick lines
+                cv2.drawContours(cv_image, contours, -1, (0, 255, 0), 4)
                 largest = max(contours, key=cv2.contourArea)
                 M = cv2.moments(largest)
-                if M["m00"] > 0:
+                if M["m00"] != 0:
                     cx = int(M["m10"] / M["m00"])
-                    error = cx - width // 2
+                    cy = int(M["m01"] / M["m00"])
+                    # Raise the red dot by 20% of the image height
+                    cy = max(0, cy - int(0.2 * height))
+                    # Draw a circle at the new centroid
+                    cv2.circle(cv_image, (cx, cy), 10, (0, 0, 255), -1)
+            else:
+                self.get_logger().info("No contours found.")
 
-                    # PID control (simple P)
-                    twist = Twist()
-                    twist.linear.x = 0.4
-                    twist.angular.z = -float(error) * self.Kp
-                    self.cmd_vel_pub.publish(twist)
-                    self.last_error = error
-                    return
-
-            # If no line is found, stop
-            self.cmd_vel_pub.publish(Twist())
+            # Publish the processed image
+            out_msg = self.bridge.cv2_to_imgmsg(cv_image, "bgr8")
+            self.image_pub.publish(out_msg)
 
         except Exception as e:
             self.get_logger().error(f"Image processing error: {e}")

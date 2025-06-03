@@ -21,7 +21,23 @@ find_package(gazebo_dev REQUIRED)
 find_package(gazebo_ros REQUIRED)
 
 install(
-  DIRECTORY urdf launch config
+  DIRECTORY urdf
+  DESTINATION share/${PROJECT_NAME}
+)
+install(
+  DIRECTORY worlds
+  DESTINATION share/${PROJECT_NAME}
+)
+install(
+  DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
+)
+install(
+  DIRECTORY models
+  DESTINATION share/${PROJECT_NAME}
+)
+install(
+  DIRECTORY config
   DESTINATION share/${PROJECT_NAME}
 )
 install(
@@ -29,7 +45,11 @@ install(
     src/nodes/line_follower.py
   DESTINATION lib/${PROJECT_NAME}
 )
-
+install(
+  PROGRAMS
+    src/nodes/image_processor.py
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

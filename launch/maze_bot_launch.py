@@ -20,8 +20,14 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PathJoinSubstitution([launch_dir, 'joint_state_publisher_launch.py']),
         ),
+        # IncludeLaunchDescription(
+        #     PathJoinSubstitution([launch_dir, 'joint_state_publisher_gui_launch.py']),
+        # ),
         IncludeLaunchDescription(
-            PathJoinSubstitution([launch_dir, 'joint_state_publisher_gui_launch.py']),
+            PathJoinSubstitution([launch_dir, 'line_follower_launch.py']),
+        ),
+        IncludeLaunchDescription(
+            PathJoinSubstitution([launch_dir, 'image_processor_launch.py']),
         ),
         IncludeLaunchDescription(
             PathJoinSubstitution([launch_dir,'robot_state_publisher_launch.py']),
